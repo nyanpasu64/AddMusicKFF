@@ -51,48 +51,48 @@ class File;
 #include <sys/stat.h>
 
 
-//extern ROM rom;
-extern std::vector<uint8_t> rom;
+//extern ROM global_rom;
+extern std::vector<uint8_t> global_rom;
 
-extern Music musics[256];
-//extern Sample samples[256];
-extern std::vector<Sample> samples;
-extern SoundEffect *soundEffects[2];	// soundEffects[2][256];
-extern std::vector<BankDefine *> bankDefines;
+extern Music global_musics[256];
+//extern Sample global_samples[256];
+extern std::vector<Sample> global_samples;
+extern SoundEffect *global_soundEffects[2];	// global_soundEffects[2][256];
+extern std::vector<BankDefine *> global_bankDefines;
 
-extern std::map<File, int> sampleToIndex;
+extern std::map<File, int> global_sampleToIndex;
 
-extern bool convert;
-extern bool checkEcho;
-extern bool forceSPCGeneration;
-extern int bankStart;
-extern bool verbose;
-extern bool aggressive;
-extern bool dupCheck;
-extern bool validateHex;
-extern bool doNotPatch;
-extern int errorCount;
-extern bool optimizeSampleUsage;
-extern bool usingSA1;
-extern bool allowSA1;
-extern bool forceNoContinuePrompt;
-extern bool sfxDump;
-extern bool visualizeSongs;
-extern bool redirectStandardStreams;
-extern bool noSFX;
+extern bool global_convert;
+extern bool global_checkEcho;
+extern bool global_forceSPCGeneration;
+extern int global_bankStart;
+extern bool global_verbose;
+extern bool global_aggressive;
+extern bool global_dupCheck;
+extern bool global_validateHex;
+extern bool global_doNotPatch;
+extern int global_errorCount;
+extern bool global_optimizeSampleUsage;
+extern bool global_usingSA1;
+extern bool global_allowSA1;
+extern bool global_forceNoContinuePrompt;
+extern bool global_sfxDump;
+extern bool global_visualizeSongs;
+extern bool global_redirectStandardStreams;
+extern bool global_noSFX;
 
-extern int programPos;
-extern int programUploadPos;
-extern int reuploadPos;
-extern int mainLoopPos;
-extern int SRCNTableCodePos;
-extern int programSize;
-extern int highestGlobalSong;
-//extern int totalSampleCount;
-extern int songCount;
-extern int songSampleListSize;
+extern int global_programPos;
+extern int global_programUploadPos;
+extern int global_reuploadPos;
+extern int global_mainLoopPos;
+extern int global_SRCNTableCodePos;
+extern int global_programSize;
+extern int global_highestGlobalSong;
+//extern int global_totalSampleCount;
+extern int global_songCount;
+extern int global_songSampleListSize;
 
-extern bool useAsarDLL;
+extern bool global_useAsarDLL;
 
 // Return true if an error occurred (if "dieOnError" is true).
 bool asarCompileToBIN(const File &patchName, const File &binOutput, bool dieOnError = true);
