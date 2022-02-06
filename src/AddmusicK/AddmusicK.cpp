@@ -534,7 +534,7 @@ void loadMusicList()
 				global_highestGlobalSong = std::max(global_highestGlobalSong, index);
 			if (inLocals)
 				if (index <= global_highestGlobalSong)
-					printError("Error: Local song numbers must be lower than the largest global song number.", true);
+					printError("Error: Local song numbers must be greater than the largest global song number.", true);
 		}
 		else
 		{
