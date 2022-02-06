@@ -1671,18 +1671,18 @@ void Music::parseHexCommand()
 		else
 		{
 			hexLeft -= 1;
-			
+
 			if (hexLeft == 0 && currentHex == 0xF4 && i >= 0x07 && songTargetProgram == 2 && nonNativeHexWarning) {
 				printWarning("WARNING: A hex command was used which is not native to AddMusicM.\nDid you mean: #amk 1", name, line);
 				nonNativeHexWarning = false;
 			}
-			
+
 			if (hexLeft == 1 && currentHex == 0xFA && songTargetProgram == 2)
 			{
 				hexLeft = 0;
 				error("This histortical AddmusicM hex command has not yet been implemented into AddmusicK.");
 			}
-			
+
 			// If we're on the last hex value for $E5 and this isn't an AMK song, then do some special stuff regarding tremolo.
 			// AMK doesn't use $E5 for the tremolo command or sample loading, so it has to emulate them.
 			if (hexLeft == 2 && currentHex == 0xE5 && songTargetProgram == 1/*validateTremolo*/)

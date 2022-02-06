@@ -496,7 +496,7 @@ void addSample(const std::vector<uint8_t> &sample, const std::string &name, Musi
 				return;
 			}
 		}
-		//BNK files don't qualify for the next check. 
+		//BNK files don't qualify for the next check.
 		if (!(newSample.isBNK)) {
 			fs::path p1 = "./"+newSample.name;
 			//If the sample in question was taken from a sample group, then use the sample group's important flag instead.
