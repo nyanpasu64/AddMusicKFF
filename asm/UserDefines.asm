@@ -21,7 +21,7 @@ includeonce
 
 ;=======================================
 ;---------------
-!noSFX = !false
+!noSFX = !true
 
 ;Default setting: !false
 ;---------------
