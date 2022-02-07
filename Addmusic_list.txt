@@ -1,14 +1,5 @@
 Globals:
-01  originals/01 Miss.txt
-02  originals/02 Game Over.txt
-03  originals/03 Boss Clear.txt
-04  originals/04 Stage Clear.txt
-05  originals/05 Starman.txt
-06  originals/06 P-switch.txt
-07  originals/07 Keyhole.txt
-08  originals/08 Iris Out.txt
-09  originals/09 Bonus End.txt
-
+00 blank.txt
 
 Locals:
 0A  originals/10 Piano.txt
