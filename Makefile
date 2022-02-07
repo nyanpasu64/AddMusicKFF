@@ -5,7 +5,7 @@
 #(for Windows, use Visual Studio 2019 instead to compile)
 
 CXX = g++
-CXXFLAGS = -Wall -pedantic -std=c++17 -O3
+CXXFLAGS = -Wall -pedantic -std=c++17 -g -O0
 #Commented out for now
 #with libboost (this specifically targets MacPorts inclusions)
 #CXXFLAGS += -I/opt/local/include
