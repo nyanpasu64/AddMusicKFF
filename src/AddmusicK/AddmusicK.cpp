@@ -1446,6 +1446,9 @@ void generateSPCs()
 	//for (i = 0; i < global_programSize; i++)
 	//	base[i + global_programPos] = programData[i];
 
+	if (programData.size() != global_programSize) {
+		printError("program size mismatch", true);
+	}
 	localPos = programData.size() + global_programPos;
 
 	std::vector<uint8_t> SPC, SPCBase, DSPBase;
