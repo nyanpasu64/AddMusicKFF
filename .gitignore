@@ -17,6 +17,8 @@ asm/SFX1DFCTable.bin
 asm/SFXData.bin
 asm/main.bin
 asm/tempmain.asm
+asm/SNES/SongSampleList.asm
+asm/SNES/bin/*
 stats/*
 temp.asm
 temp.bin
