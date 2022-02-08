@@ -1455,7 +1455,6 @@ void generateSPCs()
 
 	int SPCsGenerated = 0;
 
-	bool forceAll = false;
 	/*
 	time_t recentMod = 0;			// If any main program modifications were made, we need to update all SPCs.
 	for (int i = 1; i <= global_highestGlobalSong; i++)
