@@ -1554,11 +1554,17 @@ void generateSPCs()
 				}
 
 				int tablePos = localPos + global_musics[i].finalData.size();
+				fprintf(stderr, "song %u, tablePos initially %d\n", i, tablePos);
 
 				if ((tablePos & 0xFF) != 0)
 					tablePos = (tablePos & 0xFF00) + 0x100;
+				fprintf(stderr, "aligned to %d\n", tablePos);
 
 				int samplePos = tablePos + global_musics[i].mySamples.size() * 4;
+				fprintf(stderr,
+					"%lu samples, samplePos = %d\n", global_musics[i].mySamples.size(), samplePos
+				);
+				fprintf(stderr, "\n");
 
 				for (unsigned int j = 0; j < global_musics[i].mySamples.size(); j++)
 				{
