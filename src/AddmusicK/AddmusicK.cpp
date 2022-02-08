@@ -242,7 +242,6 @@ int main(int argc, char* argv[]) try		// // //
 				printError("Error: The total number of requested music files to compile exceeded 255.", true);
 			global_musics[firstLocalSong + i].exists = true;
 			global_musics[firstLocalSong + i].name = textFilesToCompile[i];
-			openTextFile((std::string("music/") + global_musics[firstLocalSong + i].name), global_musics[firstLocalSong + i].text);
 		}
 	}
 
