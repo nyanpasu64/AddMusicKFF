@@ -1,5 +1,4 @@
 Globals:
-00 blank.txt
 
 Locals:
 0A  originals/10 Piano.txt
