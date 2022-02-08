@@ -224,17 +224,25 @@ int main(int argc, char* argv[]) try		// // //
 
 	if (justSPCsPlease)
 	{
-		for (int i = global_highestGlobalSong+1; i < 256; i++)
+		// We start loading CLI songs from global_highestGlobalSong + 1. If no global
+		// songs are present, global_highestGlobalSong = 0 and we start loading songs
+		// from slot 1. We must leave slot 0 empty, because the SPC driver treats song 0
+		// as "repeat current song" rather than a song number, making songs in slot 0
+		// unplayable.
+		int firstLocalSong = global_highestGlobalSong + 1;
+
+		// Unset local songs loaded from Addmusic_list.txt.
+		for (int i = firstLocalSong; i < 256; i++)
 			global_musics[i].exists = false;
 
-
+		// Load local songs from command-line arguments.
 		for (int i = 0; i < textFilesToCompile.size(); i++)
 		{
-			if (global_highestGlobalSong + 1 + i >= 256)
+			if (firstLocalSong + i >= 256)
 				printError("Error: The total number of requested music files to compile exceeded 255.", true);
-			global_musics[global_highestGlobalSong + 1 + i].exists = true;
-			global_musics[global_highestGlobalSong + 1 + i].name = textFilesToCompile[i];
-			openTextFile((std::string("music/") + global_musics[i + global_highestGlobalSong].name), global_musics[i + global_highestGlobalSong].text);
+			global_musics[firstLocalSong + i].exists = true;
+			global_musics[firstLocalSong + i].name = textFilesToCompile[i];
+			openTextFile((std::string("music/") + global_musics[firstLocalSong + i].name), global_musics[firstLocalSong + i].text);
 		}
 	}
 
