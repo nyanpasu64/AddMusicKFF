@@ -445,6 +445,7 @@ void addSample(const File &fileName, Music *music, bool important)
 
 void addSample(const std::vector<uint8_t> &sample, const std::string &name, Music *music, bool important, bool noLoopHeader, int loopPoint, bool isBNK)
 {
+	fprintf(stderr, "Adding sample %s\n", name.c_str());
 	Sample newSample;
 	newSample.important = important;
 	newSample.isBNK = isBNK;
