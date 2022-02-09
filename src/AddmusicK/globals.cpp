@@ -526,11 +526,14 @@ void addSample(const std::vector<uint8_t> &sample, const std::string &name, Musi
 
 void addSampleGroup(const File &groupName, Music *music)
 {
-
 	for (int i = 0; i < bankDefines.size(); i++)
 	{
 		if ((std::string)groupName == bankDefines[i]->name)
 		{
+			fprintf(stderr,
+				"adding sample group %s with %lu elements\n",
+				groupName.cStr(), bankDefines[i]->samples.size()
+			);
 			for (int j = 0; j < bankDefines[i]->samples.size(); j++)
 			{
 				std::string temp;
