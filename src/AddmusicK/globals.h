@@ -55,11 +55,13 @@ class File;
 extern std::vector<uint8_t> rom;
 
 extern Music musics[256];
-//extern Sample samples[256];
+
+/// vector[GlobalSampleIndex] Sample
 extern std::vector<Sample> samples;
 extern SoundEffect *soundEffects[2];	// soundEffects[2][256];
 extern std::vector<BankDefine *> bankDefines;
 
+/// map[str] GlobalSampleIdx
 extern std::map<File, int> sampleToIndex;
 
 extern bool convert;
@@ -152,7 +154,8 @@ void addSample(const std::vector<uint8_t> &sample, const std::string &name, Musi
 void addSampleGroup(const File &fileName, Music *music);
 void addSampleBank(const File &fileName, Music *music);
 
-int getSample(const File &name, Music *music);
+int getGlobalSample(const File &name, Music *music);
+int getMySample(const File &name, Music *music);
 
 void preprocess(std::string &str, const std::string &filename, int &version);
 
