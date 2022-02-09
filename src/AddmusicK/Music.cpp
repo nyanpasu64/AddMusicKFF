@@ -2877,6 +2877,10 @@ void Music::pointersFirstPass()
 	if (data[0].size() == 0 && data[1].size() == 0 && data[2].size() == 0 && data[3].size() == 0 && data[4].size() == 0 && data[5].size() == 0 && data[6].size() == 0 && data[7].size() == 0)
 		error("This song contained no musical data!")
 
+	fprintf(stderr,
+		"Music::pointersFirstPass() start, %ld samples in ARAM, %ld global sample names\n",
+		mySamples.size(), global_sampleToIndex.size()
+	);
 
 	if (targetAMKVersion == 1)			// Handle more conversion of the old $FC command to remote call.
 	{
@@ -2952,6 +2956,10 @@ void Music::pointersFirstPass()
 	if (global_optimizeSampleUsage)
 	{
 		int emptySampleIndex = ::getSample("EMPTY.brr", this);
+		fprintf(stderr,
+			"EMPTY.brr at index %d, sample count %lu\n",
+			emptySampleIndex, mySamples.size()
+		);
 		if (emptySampleIndex == -1)
 		{
 			addSample("EMPTY.brr", this, true);
