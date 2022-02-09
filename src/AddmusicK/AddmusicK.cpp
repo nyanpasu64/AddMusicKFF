@@ -222,6 +222,16 @@ int main(int argc, char* argv[]) try		// // //
 	compileGlobalData();
 	//}
 
+	auto printSongs = []() {
+		int firstLocalSong = global_highestGlobalSong + 1;
+		for (int i = 0; i < textFilesToCompile.size(); i++)
+			fprintf(stderr,
+				"song %d: %lu samples\n",
+				firstLocalSong + i, global_musics[firstLocalSong + i].mySamples.size()
+			);
+		fprintf(stderr, "\n");
+	};
+
 	if (justSPCsPlease)
 	{
 		// We start loading CLI songs from global_highestGlobalSong + 1. If no global
@@ -242,11 +252,18 @@ int main(int argc, char* argv[]) try		// // //
 				printError("Error: The total number of requested music files to compile exceeded 255.", true);
 			global_musics[firstLocalSong + i].exists = true;
 			global_musics[firstLocalSong + i].name = textFilesToCompile[i];
+			fprintf(stderr,
+				"song %d: %lu samples\n",
+				firstLocalSong + i, global_musics[firstLocalSong + i].mySamples.size()
+			);
 		}
+		fprintf(stderr, "\n");
 	}
 
 	compileMusic();
+	printSongs();
 	fixMusicPointers();
+	printSongs();
 
 	generateSPCs();
 
