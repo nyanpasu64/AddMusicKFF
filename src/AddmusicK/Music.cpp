@@ -2938,6 +2938,7 @@ void Music::pointersFirstPass()
 
 
 
+	fprintf(stderr, "Explicitly supplied samples: %lld\n", mySamples.size());
 	if (mySamples.size() == 0)	// If no sample groups were provided...
 	{
 		text = "{#default }";		// This is a dumb, cheap trick, but...eh.
