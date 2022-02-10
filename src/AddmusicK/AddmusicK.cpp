@@ -1143,15 +1143,41 @@ void fixMusicPointers()
 	if (verbose)
 		std::cout << "Fixing song pointers..." << std::endl;
 
-	std::stringstream globalPointers;
-	std::stringstream incbins;
+	// Text appended to main.asm after the SongPointers: label.
+	std::stringstream songDataSrc;
 
+	// Generate songDataSrc.
+	{
+		// Populate SongPointers table with addresses of songs present.
+		for (int i = 0; i < 256; i++)
+		{
+			if (musics[i].exists == false) continue;
+			if (i <= highestGlobalSong)
+				songDataSrc << "\tdw song" << hex2 << i << "\n";
+			else
+				break;
+		}
+		songDataSrc << "\tdw localSong\n\n";
+
+		// Populate destinations of SongPointers table with song data.
+		for (int i = 0; i < 256; i++)
+		{
+			if (musics[i].exists == false) continue;
+			if (i <= highestGlobalSong)
+				songDataSrc << "song" << hex2 << i << ": incbin \"SNES/bin/music" << hex2 << i << ".bin\"\n";
+			else
+				break;
+		}
+		// The localSong label is at the very end of asm/tempmain.asm (compiled to
+		// asm/SNES/bin/main.bin). It points to a local song loaded in ARAM just after
+		// asm/SNES/bin/main.bin.
+		songDataSrc << "localSong:\n";
+	}
+
+	// Process songs.
 	int songDataARAMPos = programSize + programPos + highestGlobalSong * 2 + 2;
-	fprintf(stderr, "songDataARAMPos = %d\n", songDataARAMPos);
 	//                    size + startPos + pointer to each global song + pointer to local song.
-	//int songPointerARAMPos = programSize + programPos;
-
-	bool addedLocalPtr = false;
+	fprintf(stderr, "songDataARAMPos = %d\n", songDataARAMPos);
 
 	for (int i = 0; i < 256; i++)
 	{
@@ -1160,18 +1186,6 @@ void fixMusicPointers()
 		musics[i].posInARAM = songDataARAMPos;
 
 		int untilJump = -1;
-
-		if (i <= highestGlobalSong)
-		{
-			globalPointers << "\ndw song" << hex2 << i;
-			incbins << "song" << hex2 << i << ": incbin \"" << "SNES/bin/" << "music" << hex2 << i << ".bin\"\n";
-		}
-		else if (addedLocalPtr == false)
-		{
-			globalPointers << "\ndw localSong";
-			incbins << "localSong: ";
-			addedLocalPtr = true;
-		}
 
 		for (int j = 0; j < musics[i].spaceForPointersAndInstrs; j+=2)
 		{
@@ -1354,7 +1368,7 @@ void fixMusicPointers()
 	std::string patch;
 	openTextFile("asm/tempmain.asm", patch);
 
-	patch += globalPointers.str() + "\n" + incbins.str();
+	patch += songDataSrc.str();
 
 	writeTextFile("asm/tempmain.asm", patch);
 
