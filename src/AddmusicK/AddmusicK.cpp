@@ -1164,6 +1164,7 @@ void fixMusicPointers()
 	std::stringstream songDataSrc;
 
 	int songDataARAMPos = programSize + programPos + highestGlobalSong * 2 + 2;
+	fprintf(stderr, "songDataARAMPos = %d\n", songDataARAMPos);
 	//                    size + startPos + pointer to each global song + pointer to local song.
 	//int songPointerARAMPos = programSize + programPos;
 
@@ -1399,6 +1400,11 @@ void fixMusicPointers()
 	//}
 
 	programSize = getFileSize("asm/SNES/bin/main.bin");
+	fprintf(stderr, "end of program = %d\n", programPos + programSize);
+	if (programPos + programSize != songDataARAMPos)
+	{
+		printError("Internal error: song program position mismatch!", true);
+	}
 
 	std::vector<uint8_t> temp;
 	openFile("asm/SNES/bin/main.bin", temp);
