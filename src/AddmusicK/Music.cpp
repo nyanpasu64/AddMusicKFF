@@ -2937,10 +2937,6 @@ void Music::pointersFirstPass()
 	if (global_optimizeSampleUsage)
 	{
 		int emptySampleIndex = getGlobalSample("EMPTY.brr", this);
-		fprintf(stderr,
-			"EMPTY.brr at index %d, sample count %lu\n",
-			emptySampleIndex, mySamples.size()
-		);
 		if (emptySampleIndex == -1)
 		{
 			// Add EMPTY.brr to global::samples and global::sampleToIndex, but not mySamples.
