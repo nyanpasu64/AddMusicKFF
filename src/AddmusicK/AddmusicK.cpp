@@ -1143,7 +1143,6 @@ void fixMusicPointers()
 	if (verbose)
 		std::cout << "Fixing song pointers..." << std::endl;
 
-	int pointersPos = programSize + 0x400;
 	std::stringstream globalPointers;
 	std::stringstream incbins;
 
