@@ -420,30 +420,39 @@ int clearRATS(int offset)
 	return r+1;
 }
 
-void addSample(const File &fileName, Music *music, bool important)
+void addSample(const File &fileName, Music *maybeMusic, bool important)
 {
 	std::vector<uint8_t> temp;
 	std::string actualPath = "";
 
-	std::string relativeDir = music->name;
-	std::string absoluteDir = "samples/" + (std::string)fileName;
-	std::replace(relativeDir.begin(), relativeDir.end(), '\\', '/');
-	relativeDir = "music/" + relativeDir;
-	relativeDir = relativeDir.substr(0, relativeDir.find_last_of('/'));
-	relativeDir += "/" + (std::string)fileName;
+	if (maybeMusic)
+	{
+		std::string relativeDir = maybeMusic->name;
+		std::replace(relativeDir.begin(), relativeDir.end(), '\\', '/');
+		relativeDir = "music/" + relativeDir;
+		relativeDir = relativeDir.substr(0, relativeDir.find_last_of('/'));
+		relativeDir += "/" + (std::string)fileName;
+		if (fileExists(relativeDir))
+		{
+			actualPath = relativeDir;
+		}
+	}
 
-	if (fileExists(relativeDir))
-		actualPath = relativeDir;
-	else if (fileExists(absoluteDir))
-		actualPath = absoluteDir;
-	else
-		printError("Could not find sample " + (std::string)fileName, true, music->name);
+	if (actualPath.empty())
+	{
+		std::string absoluteDir = "samples/" + (std::string)fileName;
+		if (fileExists(absoluteDir))
+				actualPath = absoluteDir;
+	}
+
+	if (actualPath.empty())
+		printError("Could not find sample " + (std::string)fileName, true, maybeMusic ? maybeMusic->name : "");
 
 	openFile(actualPath, temp);
-	addSample(temp, actualPath, music, important, false);
+	addSample(temp, actualPath, maybeMusic, important, false);
 }
 
-void addSample(const std::vector<uint8_t> &sample, const std::string &name, Music *music, bool important, bool noLoopHeader, int loopPoint, bool isBNK)
+void addSample(const std::vector<uint8_t> &sample, const std::string &name, Music *maybeMusic, bool important, bool noLoopHeader, int loopPoint, bool isBNK)
 {
 	fprintf(stderr, "Adding sample %s\n", name.c_str());
 	Sample newSample;
@@ -480,7 +489,8 @@ void addSample(const std::vector<uint8_t> &sample, const std::string &name, Musi
 		{
 			if (global_samples[i].name == newSample.name)
 			{
-				music->mySamples.push_back(i);
+				if (maybeMusic)
+					maybeMusic->mySamples.push_back(i);
 				return;						// Don't add two of the same sample.
 			}
 		}
@@ -493,7 +503,8 @@ void addSample(const std::vector<uint8_t> &sample, const std::string &name, Musi
 				if (!(newSample.isBNK)) {
 					global_sampleToIndex[name] = i;
 				}
-				music->mySamples.push_back(i);
+				if (maybeMusic)
+					maybeMusic->mySamples.push_back(i);
 				return;
 			}
 		}
@@ -520,7 +531,8 @@ void addSample(const std::vector<uint8_t> &sample, const std::string &name, Musi
 	if (!(newSample.isBNK)) {
 		global_sampleToIndex[newSample.name] = global_samples.size();
 	}
-	music->mySamples.push_back(global_samples.size());
+	if (maybeMusic)
+		maybeMusic->mySamples.push_back(global_samples.size());
 	global_samples.push_back(newSample);					// This is a sample we haven't encountered before.  Add it.
 }
 
