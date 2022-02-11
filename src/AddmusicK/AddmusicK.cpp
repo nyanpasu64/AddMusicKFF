@@ -1474,7 +1474,6 @@ void generateSPCs()
 	std::vector<uint8_t> SPC, SPCBase, DSPBase;
 	openFile("asm/SNES/SPCBase.bin", SPCBase);
 	openFile("asm/SNES/SPCDSPBase.bin", DSPBase);
-	SPC.resize(0x10200);
 
 	int SPCsGenerated = 0;
 
