@@ -1163,37 +1163,39 @@ void fixMusicPointers()
 	// Text appended to main.asm after the SongPointers: label.
 	std::stringstream songDataSrc;
 
-	int songDataARAMPos = programSize + programPos + highestGlobalSong * 2 + 2;
-	fprintf(stderr, "songDataARAMPos = %d\n", songDataARAMPos);
-	//                    size + startPos + pointer to each global song + pointer to local song.
-	//int songPointerARAMPos = programSize + programPos;
-
-	// Populate SongPointers table with addresses of songs present.
-	for (int i = 0; i < 256; i++)
+	// Generate songDataSrc.
 	{
-		if (musics[i].exists == false) continue;
-		if (i <= highestGlobalSong)
-			songDataSrc << "\tdw song" << hex2 << i << "\n";
-		else
-			break;
-	}
-	songDataSrc << "\tdw localSong\n\n";
+		// Populate SongPointers table with addresses of songs present.
+		for (int i = 0; i < 256; i++)
+		{
+			if (musics[i].exists == false) continue;
+			if (i <= highestGlobalSong)
+				songDataSrc << "\tdw song" << hex2 << i << "\n";
+			else
+				break;
+		}
+		songDataSrc << "\tdw localSong\n\n";
 
-	// Populate destinations of SongPointers table with song data.
-	for (int i = 0; i < 256; i++)
-	{
-		if (musics[i].exists == false) continue;
-		if (i <= highestGlobalSong)
-			songDataSrc << "song" << hex2 << i << ": incbin \"SNES/bin/music" << hex2 << i << ".bin\"\n";
-		else
-			break;
+		// Populate destinations of SongPointers table with song data.
+		for (int i = 0; i < 256; i++)
+		{
+			if (musics[i].exists == false) continue;
+			if (i <= highestGlobalSong)
+				songDataSrc << "song" << hex2 << i << ": incbin \"SNES/bin/music" << hex2 << i << ".bin\"\n";
+			else
+				break;
+		}
+		// The localSong label is at the very end of asm/tempmain.asm (compiled to
+		// asm/SNES/bin/main.bin). It points to a local song loaded in ARAM just after
+		// asm/SNES/bin/main.bin.
+		songDataSrc << "localSong:\n";
 	}
-	// The localSong label is at the very end of asm/tempmain.asm (compiled to
-	// asm/SNES/bin/main.bin). It points to a local song loaded in ARAM just after
-	// asm/SNES/bin/main.bin.
-	songDataSrc << "localSong:\n";
 
 	// Process songs.
+	int songDataARAMPos = programSize + programPos + highestGlobalSong * 2 + 2;
+	//                    size + startPos + pointer to each global song + pointer to local song.
+	fprintf(stderr, "songDataARAMPos = %d\n", songDataARAMPos);
+
 	for (int i = 0; i < 256; i++)
 	{
 		if (musics[i].exists == false) continue;
