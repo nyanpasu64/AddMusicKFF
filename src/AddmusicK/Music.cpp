@@ -158,7 +158,6 @@ bool Music::doReplacement()
 Music::Music()
 {
 	knowsLength = false;
-	playOnce = false;
 	hasIntro = false;
 	totalSize = 0;
 	spaceForPointersAndInstrs = 0;
@@ -2977,8 +2976,6 @@ void Music::pointersFirstPass()
 
 	for (i = 0; i < 8; i++)
 		phrasePointers[i][1] += phrasePointers[i][0];
-
-	playOnce = doesntLoop;
 
 	spaceForPointersAndInstrs = 20;
 
