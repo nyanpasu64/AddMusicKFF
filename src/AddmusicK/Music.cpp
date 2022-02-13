@@ -2990,6 +2990,7 @@ void Music::pointersFirstPass()
 	if (!doesntLoop)
 		spaceForPointersAndInstrs += 2;
 
+	fprintf(stderr, "instrumentData=%ld\n", instrumentData.size());
 	spaceForPointersAndInstrs += instrumentData.size();
 
 	allPointersAndInstrs.resize(spaceForPointersAndInstrs);// = alloc(spaceForPointersAndInstrs);
