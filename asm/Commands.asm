@@ -23,37 +23,18 @@ cmdDA:					; Change the instrument (also contains code relevant to $E5 and $F3).
 	mov	a, y
 
 SetInstrument:				; Call this to start playing the instrument in A.
-	mov	$10, #InstrumentTable	; \ $10w = the location of the instrument data.
-	mov	$11, #InstrumentTable>>8 ;/
-	mov	y, #$06			; Normal instruments have 6 bytes of data.
-	
-	inc	a			; \ 
-L_0D4B:					; |		???
-	mov	$c1+x, a		; |
+	inc	a			; \
+	mov	$c1+x, a		; | $c1+2n stores the current instrument ID of channel n.
 	dec	a			; /
-	
-	bpl	.normalInstrument	; \ 
-	mov	$10,#PercussionTable	; | If the instrument was negative, then we use the percussion table instead.	
-	mov	$11,#PercussionTable>>8	; /
-	setc				; \ 
-	sbc	a, #$cf			; | Also "correct" A. (Percussion instruments are stored "as-is", otherwise we'd subtract #$d0.
-	inc	y			; / Percussion instruments have 7 bytes of data.
-	bra	+
-	
-	
-.normalInstrument 
-	cmp	a, #30			; \ 
-	bcc 	+			; | If this instrument is >= $30, then it's a custom instrument.
-	push	a			; |
-	movw	ya, !CustomInstrumentPos ;| So we'll use the custom instrument table.
-	movw	$10, ya			; |
-	pop	a			; |
-	setc				; |
-	sbc	a, #30			; |
-ApplyInstrumentY6:
-	mov	y, #$06			; /
-+
 
+	; Assign $10w := the location of the instrument data.
+	push	a
+	movw	ya, !CustomInstrumentPos
+	movw	$10, ya
+	pop	a
+
+ApplyInstrumentY6:
+	mov	y, #$06			; Normal instruments have 6 bytes of data.
 
 ApplyInstrument:			; Call this to play the instrument in A whose data resides in a table pointed to by $14w with a width of y.
 	mul	ya			; \ 
