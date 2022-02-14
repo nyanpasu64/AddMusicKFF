@@ -2986,80 +2986,80 @@ void Music::pointersFirstPass()
 
 	spaceForPointersAndInstrs += instrumentData.size();
 
-	allPointersAndInstrs.resize(spaceForPointersAndInstrs);// = alloc(spaceForPointersAndInstrs);
+	outHeader.resize(spaceForPointersAndInstrs);// = alloc(spaceForPointersAndInstrs);
 	//for (i = 0; i < spaceForPointers; i++) allPointers[i] = 0x55;
 
-	int add = (hasIntro ? 2 : 0) + (doesntLoop ? 0 : 2) + 4;
+	int instrumentBegin = (hasIntro ? 2 : 0) + (doesntLoop ? 0 : 2) + 4;
 
 	//memcpy(allPointersAndInstrs.data() + add, instrumentData.base, instrumentData.size());
 	for (i = 0; i < instrumentData.size(); i++)
-		allPointersAndInstrs[i + add] = instrumentData[i];
+		outHeader[i + instrumentBegin] = instrumentData[i];
 
-	allPointersAndInstrs[0] = (add + instrumentData.size()) & 0xFF;
-	allPointersAndInstrs[1] = ((add + instrumentData.size()) >> 8) & 0xFF;
+	outHeader[0] = (instrumentBegin + instrumentData.size()) & 0xFF;
+	outHeader[1] = ((instrumentBegin + instrumentData.size()) >> 8) & 0xFF;
 
 	if (doesntLoop)
 	{
-		allPointersAndInstrs[add - 2] = 0xFF;	// Will be re-evaluated to 0000 when the pointers are adjusted later.
-		allPointersAndInstrs[add - 1] = 0xFF;
+		outHeader[instrumentBegin - 2] = 0xFF;	// Will be re-evaluated to 0000 when the pointers are adjusted later.
+		outHeader[instrumentBegin - 1] = 0xFF;
 	}
 	else
 	{
-		allPointersAndInstrs[add - 4] = 0xFE;	// Will be re-evaluated to FF00 when the pointers are adjusted later.
-		allPointersAndInstrs[add - 3] = 0xFF;
+		outHeader[instrumentBegin - 4] = 0xFE;	// Will be re-evaluated to FF00 when the pointers are adjusted later.
+		outHeader[instrumentBegin - 3] = 0xFF;
 		if (hasIntro)
 		{
-			allPointersAndInstrs[add - 2] = 0xFD;	// Will be re-evaluated to 0002 + ARAMPos when the pointers are adjusted later.
-			allPointersAndInstrs[add - 1] = 0xFF;
+			outHeader[instrumentBegin - 2] = 0xFD;	// Will be re-evaluated to 0002 + ARAMPos when the pointers are adjusted later.
+			outHeader[instrumentBegin - 1] = 0xFF;
 		}
 		else
 		{
-			allPointersAndInstrs[add - 2] = 0xFC;	// Will be re-evaluated to ARAMPos when the pointers are adjusted later.
-			allPointersAndInstrs[add - 1] = 0xFF;
+			outHeader[instrumentBegin - 2] = 0xFC;	// Will be re-evaluated to ARAMPos when the pointers are adjusted later.
+			outHeader[instrumentBegin - 1] = 0xFF;
 		}
 	}
 	if (hasIntro)
 	{
-		allPointersAndInstrs[2] = (add + instrumentData.size() + 16) & 0xFF;
-		allPointersAndInstrs[3] = (add + instrumentData.size() + 16) >> 8;
+		outHeader[2] = (instrumentBegin + instrumentData.size() + 16) & 0xFF;
+		outHeader[3] = (instrumentBegin + instrumentData.size() + 16) >> 8;
 	}
 
-	add += instrumentData.size();
-	allPointersAndInstrs[0 + add] = data[0].size() != 0 ? (phrasePointers[0][0] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
-	allPointersAndInstrs[1 + add] = data[0].size() != 0 ? (phrasePointers[0][0] + spaceForPointersAndInstrs) >> 8 : 0xFF;
-	allPointersAndInstrs[2 + add] = data[1].size() != 0 ? (phrasePointers[1][0] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
-	allPointersAndInstrs[3 + add] = data[1].size() != 0 ? (phrasePointers[1][0] + spaceForPointersAndInstrs) >> 8 : 0xFF;
-	allPointersAndInstrs[4 + add] = data[2].size() != 0 ? (phrasePointers[2][0] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
-	allPointersAndInstrs[5 + add] = data[2].size() != 0 ? (phrasePointers[2][0] + spaceForPointersAndInstrs) >> 8 : 0xFF;
-	allPointersAndInstrs[6 + add] = data[3].size() != 0 ? (phrasePointers[3][0] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
-	allPointersAndInstrs[7 + add] = data[3].size() != 0 ? (phrasePointers[3][0] + spaceForPointersAndInstrs) >> 8 : 0xFF;
-	allPointersAndInstrs[8 + add] = data[4].size() != 0 ? (phrasePointers[4][0] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
-	allPointersAndInstrs[9 + add] = data[4].size() != 0 ? (phrasePointers[4][0] + spaceForPointersAndInstrs) >> 8 : 0xFF;
-	allPointersAndInstrs[10 + add] = data[5].size() != 0 ? (phrasePointers[5][0] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
-	allPointersAndInstrs[11 + add] = data[5].size() != 0 ? (phrasePointers[5][0] + spaceForPointersAndInstrs) >> 8 : 0xFF;
-	allPointersAndInstrs[12 + add] = data[6].size() != 0 ? (phrasePointers[6][0] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
-	allPointersAndInstrs[13 + add] = data[6].size() != 0 ? (phrasePointers[6][0] + spaceForPointersAndInstrs) >> 8 : 0xFF;
-	allPointersAndInstrs[14 + add] = data[7].size() != 0 ? (phrasePointers[7][0] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
-	allPointersAndInstrs[15 + add] = data[7].size() != 0 ? (phrasePointers[7][0] + spaceForPointersAndInstrs) >> 8 : 0xFF;
+	instrumentBegin += instrumentData.size();
+	outHeader[0 + instrumentBegin] = data[0].size() != 0 ? (phrasePointers[0][0] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
+	outHeader[1 + instrumentBegin] = data[0].size() != 0 ? (phrasePointers[0][0] + spaceForPointersAndInstrs) >> 8 : 0xFF;
+	outHeader[2 + instrumentBegin] = data[1].size() != 0 ? (phrasePointers[1][0] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
+	outHeader[3 + instrumentBegin] = data[1].size() != 0 ? (phrasePointers[1][0] + spaceForPointersAndInstrs) >> 8 : 0xFF;
+	outHeader[4 + instrumentBegin] = data[2].size() != 0 ? (phrasePointers[2][0] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
+	outHeader[5 + instrumentBegin] = data[2].size() != 0 ? (phrasePointers[2][0] + spaceForPointersAndInstrs) >> 8 : 0xFF;
+	outHeader[6 + instrumentBegin] = data[3].size() != 0 ? (phrasePointers[3][0] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
+	outHeader[7 + instrumentBegin] = data[3].size() != 0 ? (phrasePointers[3][0] + spaceForPointersAndInstrs) >> 8 : 0xFF;
+	outHeader[8 + instrumentBegin] = data[4].size() != 0 ? (phrasePointers[4][0] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
+	outHeader[9 + instrumentBegin] = data[4].size() != 0 ? (phrasePointers[4][0] + spaceForPointersAndInstrs) >> 8 : 0xFF;
+	outHeader[10 + instrumentBegin] = data[5].size() != 0 ? (phrasePointers[5][0] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
+	outHeader[11 + instrumentBegin] = data[5].size() != 0 ? (phrasePointers[5][0] + spaceForPointersAndInstrs) >> 8 : 0xFF;
+	outHeader[12 + instrumentBegin] = data[6].size() != 0 ? (phrasePointers[6][0] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
+	outHeader[13 + instrumentBegin] = data[6].size() != 0 ? (phrasePointers[6][0] + spaceForPointersAndInstrs) >> 8 : 0xFF;
+	outHeader[14 + instrumentBegin] = data[7].size() != 0 ? (phrasePointers[7][0] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
+	outHeader[15 + instrumentBegin] = data[7].size() != 0 ? (phrasePointers[7][0] + spaceForPointersAndInstrs) >> 8 : 0xFF;
 
 	if (hasIntro)
 	{
-		allPointersAndInstrs[16 + add] = data[0].size() != 0 ? (phrasePointers[0][1] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
-		allPointersAndInstrs[17 + add] = data[0].size() != 0 ? (phrasePointers[0][1] + spaceForPointersAndInstrs) >> 8 : 0xFF;
-		allPointersAndInstrs[18 + add] = data[1].size() != 0 ? (phrasePointers[1][1] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
-		allPointersAndInstrs[19 + add] = data[1].size() != 0 ? (phrasePointers[1][1] + spaceForPointersAndInstrs) >> 8 : 0xFF;
-		allPointersAndInstrs[20 + add] = data[2].size() != 0 ? (phrasePointers[2][1] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
-		allPointersAndInstrs[21 + add] = data[2].size() != 0 ? (phrasePointers[2][1] + spaceForPointersAndInstrs) >> 8 : 0xFF;
-		allPointersAndInstrs[22 + add] = data[3].size() != 0 ? (phrasePointers[3][1] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
-		allPointersAndInstrs[23 + add] = data[3].size() != 0 ? (phrasePointers[3][1] + spaceForPointersAndInstrs) >> 8 : 0xFF;
-		allPointersAndInstrs[24 + add] = data[4].size() != 0 ? (phrasePointers[4][1] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
-		allPointersAndInstrs[25 + add] = data[4].size() != 0 ? (phrasePointers[4][1] + spaceForPointersAndInstrs) >> 8 : 0xFF;
-		allPointersAndInstrs[26 + add] = data[5].size() != 0 ? (phrasePointers[5][1] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
-		allPointersAndInstrs[27 + add] = data[5].size() != 0 ? (phrasePointers[5][1] + spaceForPointersAndInstrs) >> 8 : 0xFF;
-		allPointersAndInstrs[28 + add] = data[6].size() != 0 ? (phrasePointers[6][1] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
-		allPointersAndInstrs[29 + add] = data[6].size() != 0 ? (phrasePointers[6][1] + spaceForPointersAndInstrs) >> 8 : 0xFF;
-		allPointersAndInstrs[30 + add] = data[7].size() != 0 ? (phrasePointers[7][1] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
-		allPointersAndInstrs[31 + add] = data[7].size() != 0 ? (phrasePointers[7][1] + spaceForPointersAndInstrs) >> 8 : 0xFF;
+		outHeader[16 + instrumentBegin] = data[0].size() != 0 ? (phrasePointers[0][1] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
+		outHeader[17 + instrumentBegin] = data[0].size() != 0 ? (phrasePointers[0][1] + spaceForPointersAndInstrs) >> 8 : 0xFF;
+		outHeader[18 + instrumentBegin] = data[1].size() != 0 ? (phrasePointers[1][1] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
+		outHeader[19 + instrumentBegin] = data[1].size() != 0 ? (phrasePointers[1][1] + spaceForPointersAndInstrs) >> 8 : 0xFF;
+		outHeader[20 + instrumentBegin] = data[2].size() != 0 ? (phrasePointers[2][1] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
+		outHeader[21 + instrumentBegin] = data[2].size() != 0 ? (phrasePointers[2][1] + spaceForPointersAndInstrs) >> 8 : 0xFF;
+		outHeader[22 + instrumentBegin] = data[3].size() != 0 ? (phrasePointers[3][1] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
+		outHeader[23 + instrumentBegin] = data[3].size() != 0 ? (phrasePointers[3][1] + spaceForPointersAndInstrs) >> 8 : 0xFF;
+		outHeader[24 + instrumentBegin] = data[4].size() != 0 ? (phrasePointers[4][1] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
+		outHeader[25 + instrumentBegin] = data[4].size() != 0 ? (phrasePointers[4][1] + spaceForPointersAndInstrs) >> 8 : 0xFF;
+		outHeader[26 + instrumentBegin] = data[5].size() != 0 ? (phrasePointers[5][1] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
+		outHeader[27 + instrumentBegin] = data[5].size() != 0 ? (phrasePointers[5][1] + spaceForPointersAndInstrs) >> 8 : 0xFF;
+		outHeader[28 + instrumentBegin] = data[6].size() != 0 ? (phrasePointers[6][1] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
+		outHeader[29 + instrumentBegin] = data[6].size() != 0 ? (phrasePointers[6][1] + spaceForPointersAndInstrs) >> 8 : 0xFF;
+		outHeader[30 + instrumentBegin] = data[7].size() != 0 ? (phrasePointers[7][1] + spaceForPointersAndInstrs) & 0xFF : 0xFB;
+		outHeader[31 + instrumentBegin] = data[7].size() != 0 ? (phrasePointers[7][1] + spaceForPointersAndInstrs) >> 8 : 0xFF;
 	}
 
 	totalSize = data[0].size() + data[1].size() + data[2].size() + data[3].size() + data[4].size() + data[5].size() + data[6].size() + data[7].size() + data[8].size() + spaceForPointersAndInstrs;

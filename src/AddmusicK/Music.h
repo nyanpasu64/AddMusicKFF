@@ -45,7 +45,7 @@ public:
 	std::string text;
 	int totalSize;
 	int spaceForPointersAndInstrs;
-	std::vector<uint8_t> allPointersAndInstrs;
+	std::vector<uint8_t> outHeader;
 	std::vector<uint8_t> instrumentData;
 	std::vector<uint8_t> finalData;
 

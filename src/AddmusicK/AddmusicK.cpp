@@ -1213,40 +1213,40 @@ void fixMusicPointers()
 				untilJump = -1;
 			}
 
-			int temp = song.allPointersAndInstrs[j] | song.allPointersAndInstrs[j+1] << 8;
+			int temp = song.outHeader[j] | song.outHeader[j+1] << 8;
 
 			if (temp == 0xFFFF)		// 0xFFFF = swap with 0x0000.
 			{
-				song.allPointersAndInstrs[j] = 0;
-				song.allPointersAndInstrs[j+1] = 0;
+				song.outHeader[j] = 0;
+				song.outHeader[j+1] = 0;
 				untilJump = 1;
 			}
 			else if (temp == 0xFFFE)	// 0xFFFE = swap with 0x00FF.
 			{
-				song.allPointersAndInstrs[j] = 0xFF;
-				song.allPointersAndInstrs[j+1] = 0;
+				song.outHeader[j] = 0xFF;
+				song.outHeader[j+1] = 0;
 				untilJump = 2;
 			}
 			else if (temp == 0xFFFD)	// 0xFFFD = swap with the song's position (its first track pointer).
 			{
-				song.allPointersAndInstrs[j] = (song.posInARAM + 2) & 0xFF;
-				song.allPointersAndInstrs[j+1] = (song.posInARAM + 2) >> 8;
+				song.outHeader[j] = (song.posInARAM + 2) & 0xFF;
+				song.outHeader[j+1] = (song.posInARAM + 2) >> 8;
 			}
 			else if (temp == 0xFFFC)	// 0xFFFC = swap with the song's position + 2 (its second track pointer).
 			{
-				song.allPointersAndInstrs[j] = song.posInARAM & 0xFF;
-				song.allPointersAndInstrs[j+1] = song.posInARAM >> 8;
+				song.outHeader[j] = song.posInARAM & 0xFF;
+				song.outHeader[j+1] = song.posInARAM >> 8;
 			}
 			else if (temp == 0xFFFB)	// 0xFFFB = swap with 0x0000, but don't set untilSkip.
 			{
-				song.allPointersAndInstrs[j] = 0;
-				song.allPointersAndInstrs[j+1] = 0;
+				song.outHeader[j] = 0;
+				song.outHeader[j+1] = 0;
 			}
 			else
 			{
 				temp += song.posInARAM;
-				song.allPointersAndInstrs[j] = temp & 0xFF;
-				song.allPointersAndInstrs[j+1] = temp >> 8;
+				song.outHeader[j] = temp & 0xFF;
+				song.outHeader[j+1] = temp >> 8;
 			}
 			untilJump--;
 		}
@@ -1306,8 +1306,8 @@ void fixMusicPointers()
 		}
 
 
-		for (unsigned int j = 0; j < song.allPointersAndInstrs.size(); j++)
-			final.push_back(song.allPointersAndInstrs[j]);
+		for (unsigned int j = 0; j < song.outHeader.size(); j++)
+			final.push_back(song.outHeader[j]);
 
 		for (unsigned int j = 0; j < 9; j++)
 			for (unsigned int k = 0; k < song.data[j].size(); k++)
