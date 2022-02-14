@@ -1,0 +1,9 @@
+#option NoLoop
+
+#0
+@21 c4
+@21 c4
+c4
+c4
+
+#amk 2
