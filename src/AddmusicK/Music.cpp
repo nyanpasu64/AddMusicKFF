@@ -53,12 +53,6 @@ static int targetAMKVersion;
 
 static int loopLabel = 0;
 
-static const int tmpTrans[19] = { 0, 0, 5, 0, 0, 0, 0, 0, 0, -5, 6, 0, -5, 0, 0, 8, 0, 0, 0 };
-static const int instrToSample[30] = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x07, 0x08, 0x09, 0x05, 0x0A,	// \ Instruments
-0x0B, 0x01, 0x10, 0x0C, 0x0D, 0x12, 0x0C, 0x11, 0x01,		// /
-0x00, 0x00,							// Nothing
-0x0F, 0x06, 0x06, 0x0E, 0x0E, 0x0B, 0x0B, 0x0B, 0x0E };		// Percussion
-
 static const int hexLengths[] = { 2, 2, 3, 4, 4, 1,
 2, 3, 2, 3, 2, 4, 2, 2, 3, 4, 2, 4, 4, 3, 2, 4,
 1, 4, 4, 3, 2, 9, 3, 4, 2, 3, 3, 2, 5, 1, 1 };
@@ -258,9 +252,6 @@ void Music::init()
 		transposeMap[z] = 0;
 		usedSamples[z] = false;
 	}
-
-	for (int z = 0; z < 19; z++)
-		transposeMap[z] = tmpTrans[z];
 
 	for (int z = 0; z < 16; z++)	// Add some spaces to the end.
 		text += ' ';
@@ -772,46 +763,23 @@ void Music::parseInstrumentCommand()
 	if (i == -1) error("Error parsing instrument (\"@\") command.")
 	if (i < 0 || i > 255) error("Illegal value for instrument (\"@\") command.")
 
-	if ((i <= 18 || direct) || i >= 30)
+	if (optimizeSampleUsage)
 	{
-		if (convert)
-		{
-			if (i >= 0x13 && i < 30)	// Change it to an HFD custom instrument.
-				i = i - 0x13 + 30;
-		}
-		if (optimizeSampleUsage)
-		{
-			if (i < 30)
-				usedSamples[instrToSample[i]] = true;
-			else {
-				int customInstrIndex = i - 30;
-				if (customInstrIndex * 6 < instrumentData.size())
-					usedSamples[instrumentData[customInstrIndex * 6]] = true;
-				else
-					error("This custom instrument has not been defined yet.")
-			}
-		}
-
-		if (songTargetProgram == 1)
-		{
-			ignoreTuning[channel] = false;
-		}
-
-		append(0xDA);
-		append(i);
+		if (i * 6 < instrumentData.size())
+			usedSamples[instrumentData[i * 6]] = true;
+		else
+			error("This instrument has not been defined yet.")
 	}
 
-	if (i < 30)
-	if (optimizeSampleUsage)
-		usedSamples[instrToSample[i]] = true;
+	if (songTargetProgram == 1)
+	{
+		ignoreTuning[channel] = false;
+	}
+
+	append(0xDA);
+	append(i);
 
 	instrument[channel] = i;
-	//if (htranspose[i] == true)
-	if (songTargetProgram == 2 && i < 19) {
-		hTranspose = 0;
-		usingHTranspose = false;
-		transposeMap[instrument[channel]] = ::tmpTrans[instrument[channel]];
-	}
 }
 
 void Music::parseOpenParenCommand()
@@ -827,15 +795,7 @@ void Music::parseSampleLoadCommand()
 	pos += 1;
 	if (text[pos] == '@')
 	{
-		pos++;
-		i = getInt();
-		i = instrToSample[i];
-		if (text[pos] != ',')
-		{
-			error("Error parsing sample load command.")
-				return;
-		}
-		pos++;
+		error("@... sample unsupported");
 	}
 	else
 	{
@@ -2519,14 +2479,7 @@ void Music::parseInstrumentDefinitions()
 		}
 		else
 		{
-			i = getInt();
-			if (i == -1)
-				fatalError("Error parsing the instrument copy portion of the instrument command.");
-
-			if (i >= 30)
-				fatalError("Cannot use a custom instrument's sample as a base for another custom instrument.")
-
-				i = instrToSample[i];
+			fatalError("Using a default instrument as a base for custom instruments is unsupported.");
 		}
 
 		instrumentData.push_back(i);
