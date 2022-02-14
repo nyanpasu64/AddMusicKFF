@@ -336,9 +336,7 @@ RunRemoteCode2:
 NoteVCMD:			
 {	
 				; X should contain the current channel * 2.
-				; A should contain the note (can be percussion or a normal pitch note).
-	cmp	a, #$d0
-	bcs	PercNote             ; percussion note
+				; A should contain the note.
 	cmp	a,#$C6			;;;;;;;;;;;;Code change
 	bcc	NormalNote
 	beq	L_05CD
@@ -370,16 +368,7 @@ L_05CD:
 ;	dec	y			; | Clear ADSR bit to force GAIN.
 ;	mov	a, #$7f			; |
 ;	jmp	DSPWrite		; /
-	
-PercNote:
-	
-	mov	$c1+x, a
-	setc
-	sbc	a, #$d0
-	mov	y, #$07
-	mov	$10, #PercussionTable
-	mov	$11, #PercussionTable>>8
-	call	ApplyInstrument             ; set sample A-$D0 in bank $5FA5 width 6
+
 NormalNote:						;;;;;;;;;;/ Code change
 	
 	and	a, #$7f		; Right now the note is somewhere between #$80 and #$C6 or so.  Get rid of the MSB to bring it down to #$00 - #$46
@@ -3280,10 +3269,7 @@ GetSampleTableLocation:
 	mov	$f5, a		; Echo back DIR
 	mov	y, #$00
 	jmp	($0014+x)		; Jump to the upload location.
-	
 
-	incsrc "InstrumentData.asm"
-	
 
 if !noSFX = !false
 if !useSFXSequenceFor1DFASFX = !true
