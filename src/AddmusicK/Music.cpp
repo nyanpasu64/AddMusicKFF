@@ -160,7 +160,7 @@ Music::Music()
 	echoBufferSize = 0;
 	noteParamaterByteCount = 0;
 
-	//if (global_validateHex)		// Allow space for the buffer reservation header.
+	//if (validateHex)		// Allow space for the buffer reservation header.
 	//	data[0].resize(3);
 }
 
@@ -369,7 +369,7 @@ void Music::init()
 	else if (text.find("#7") != -1)
 		channel = 7, prevChannel = 7;
 
-	if (global_validateHex && index > global_highestGlobalSong)			// We can't just insert this at the end due to looping complications and such.
+	if (validateHex && index > highestGlobalSong)			// We can't just insert this at the end due to looping complications and such.
 	{
 		resizedChannel = channel;
 	}
@@ -763,7 +763,7 @@ void Music::parseInstrumentCommand()
 	if (i == -1) error("Error parsing instrument (\"@\") command.")
 	if (i < 0 || i > 255) error("Illegal value for instrument (\"@\") command.")
 
-	if (global_optimizeSampleUsage)
+	if (optimizeSampleUsage)
 	{
 		if (i * 6 < instrumentData.size())
 			usedSamples[instrumentData[i * 6]] = true;
@@ -841,7 +841,7 @@ void Music::parseSampleLoadCommand()
 	}
 	pos++;
 
-	if (global_optimizeSampleUsage)
+	if (optimizeSampleUsage)
 		usedSamples[i] = true;
 
 	append(0xF3);
@@ -1253,7 +1253,7 @@ void Music::parseHFDInstrumentHack(int addr, int bytes)
 		addr++;
 		if (byteNum == 1)
 		{
-			if (global_optimizeSampleUsage)
+			if (optimizeSampleUsage)
 				usedSamples[i] = true;
 		}
 		if (byteNum == 5)
@@ -1278,7 +1278,7 @@ void Music::parseHFDHex()
 			return;
 		}
 
-		if (i == 0x80 && global_convert)
+		if (i == 0x80 && convert)
 		{
 			int reg;
 			int val;
@@ -1329,7 +1329,7 @@ void Music::parseHFDHex()
 			}
 			hexLeft = 0;
 		}
-		else if (i == 0x81 && global_convert)
+		else if (i == 0x81 && convert)
 		{
 			skipSpaces;
 			if (text[pos] != '$')
@@ -1350,12 +1350,12 @@ void Music::parseHFDHex()
 			append(i);
 			hexLeft = 0;
 		}
-		else if ((i == 0x83) && global_convert)
+		else if ((i == 0x83) && convert)
 		{
 			error("Unknown HFD hex command.");
 			return;
 		}
-		else if (i == 0x82 && global_convert)
+		else if (i == 0x82 && convert)
 		{
 			int addr;
 			int bytes;
@@ -1455,7 +1455,7 @@ void Music::parseHFDHex()
 			currentHex = 0xED;
 			hexLeft = hexLengths[currentHex - 0xDA] - 1 - 1;
 			append(0xED);
-			if (global_convert)
+			if (convert)
 				append(i);
 			else
 				append(i);
@@ -1480,7 +1480,7 @@ void Music::parseHexCommand()
 		return;
 	}
 
-	if (global_validateHex)
+	if (validateHex)
 	{
 		if (hexLeft == 0)
 		{
@@ -1648,7 +1648,7 @@ void Music::parseHexCommand()
 					if (mySamples.size() == 0 && (i & 0x7F) > 0x13)
 						error("This song uses custom samples, but has not yet defined its samples with the #samples command.")
 
-					if (global_optimizeSampleUsage)
+					if (optimizeSampleUsage)
 						usedSamples[i - 0x80] = true;
 					append(0xF3);
 					append(i - 0x80);
@@ -1880,7 +1880,7 @@ void Music::parseHexCommand()
 
 			if (hexLeft == 1 && currentHex == 0xF3)
 			{
-				if (global_optimizeSampleUsage)
+				if (optimizeSampleUsage)
 					usedSamples[i] = true;
 			}
 
@@ -1894,7 +1894,7 @@ void Music::parseHexCommand()
 				if (i >= 0x13)							// Then change it to a custom instrument.
 					i = i - 0x13 + 30;
 
-				if (global_optimizeSampleUsage)
+				if (optimizeSampleUsage)
 					usedSamples[instrumentData[(i - 30) * 5]] = true;
 			}
 
@@ -2476,7 +2476,7 @@ void Music::parseInstrumentDefinitions()
 		}
 
 		instrumentData.push_back(i);
-		if (global_optimizeSampleUsage)
+		if (optimizeSampleUsage)
 			usedSamples[i] = true;
 
 		skipSpaces;
@@ -2802,14 +2802,14 @@ bool sortTempoPair(const std::pair<double, int> &p1, const std::pair<double, int
 
 void Music::pointersFirstPass()
 {
-	if (global_errorCount) printError("There were errors when compiling the music file.  Compilation aborted.  Your ROM has not been modified.", true);
+	if (errorCount) printError("There were errors when compiling the music file.  Compilation aborted.  Your ROM has not been modified.", true);
 
 	if (data[0].size() == 0 && data[1].size() == 0 && data[2].size() == 0 && data[3].size() == 0 && data[4].size() == 0 && data[5].size() == 0 && data[6].size() == 0 && data[7].size() == 0)
 		error("This song contained no musical data!")
 
 	fprintf(stderr,
 		"Music::pointersFirstPass() start, %ld samples in ARAM, %ld global sample names\n",
-		mySamples.size(), global_sampleToIndex.size()
+		mySamples.size(), sampleToIndex.size()
 	);
 
 	if (targetAMKVersion == 1)			// Handle more conversion of the old $FC command to remote call.
@@ -2883,7 +2883,7 @@ void Music::pointersFirstPass()
 	if (game.empty())
 		game = "Super Mario World (custom)";
 
-	if (global_optimizeSampleUsage)
+	if (optimizeSampleUsage)
 	{
 		int emptySampleIndex = getGlobalSample("EMPTY.brr", this);
 		if (emptySampleIndex == -1)
@@ -2895,7 +2895,7 @@ void Music::pointersFirstPass()
 
 
 		for (i = 0; i < mySamples.size(); i++)
-		if (usedSamples[i] == false && global_samples[mySamples[i]].important == false)
+		if (usedSamples[i] == false && samples[mySamples[i]].important == false)
 			mySamples[i] = emptySampleIndex;
 	}
 
@@ -3082,16 +3082,16 @@ void Music::pointersFirstPass()
 	int spaceUsedBySamples = 0;
 	for (i = 0; i < mySamples.size(); i++)
 	{
-		spaceUsedBySamples += 4 + global_samples[mySamples[i]].data.size();	// The 4 accounts for the space used by the SRCN table.
+		spaceUsedBySamples += 4 + samples[mySamples[i]].data.size();	// The 4 accounts for the space used by the SRCN table.
 	}
 
-	if (global_verbose)
+	if (verbose)
 		std::cout << name << " total size: 0x" << std::hex << std::uppercase << std::setw(4) << std::setfill('0') << totalSize << " bytes" << std::dec << std::endl;
 	else
 		printChannelDataNonVerbose(totalSize);
 	//for (int z = 0; z <= 8; z++)
 	//{
-	if (global_verbose)
+	if (verbose)
 	{
 		printf("\t#0: 0x%03X #1: 0x%03X #2: 0x%03X #3: 0x%03X Ptrs+Instrs: 0x%03X\n\t#4: 0x%03X #5: 0x%03X #6: 0x%03X #7: 0x%03X Loop:        0x%03X \n", (unsigned int)data[0].size(), (unsigned int)data[1].size(), (unsigned int)data[2].size(), (unsigned int)data[3].size(), spaceForPointersAndInstrs, (unsigned int)data[4].size(), (unsigned int)data[5].size(), (unsigned int)data[6].size(), (unsigned int)data[7].size(), (unsigned int)data[8].size());
 
@@ -3116,8 +3116,8 @@ void Music::pointersFirstPass()
 	statStrStream << "SAMPLES SIZE:				0x" << hex4 << spaceUsedBySamples << "\n";
 	statStrStream << "ECHO SIZE:				0x" << hex4 << (echoBufferSize << 11) << "\n";
 	statStrStream << "SONG TOTAL DATA SIZE:			0x" << hex4 << data[0].size() + data[1].size() + data[2].size() + data[3].size() + data[4].size() + data[5].size() + data[6].size() + data[7].size() + data[8].size() + spaceForPointersAndInstrs << "\n";
-	if (index > global_highestGlobalSong)
-		statStrStream << "FREE ARAM (APPROXIMATE):		0x" << hex4 << 0x10000 - (echoBufferSize << 11) - spaceUsedBySamples - totalSize - global_programUploadPos << "\n\n";
+	if (index > highestGlobalSong)
+		statStrStream << "FREE ARAM (APPROXIMATE):		0x" << hex4 << 0x10000 - (echoBufferSize << 11) - spaceUsedBySamples - totalSize - programUploadPos << "\n\n";
 	else
 		statStrStream << "FREE ARAM (APPROXIMATE):		UNKNOWN\n\n";
 	statStrStream << "CHANNEL 0 TICKS:			0x" << hex4 << channelLengths[0] << "\n";

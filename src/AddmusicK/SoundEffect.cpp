@@ -26,7 +26,7 @@ while (isspace(text[pos]))	\
 	return; }				\
 
 
-#define append(value) global_soundEffects[bank][index].data.push_back(value)
+#define append(value) soundEffects[bank][index].data.push_back(value)
 
 std::string &SoundEffect::getEffectiveName()
 {
@@ -424,7 +424,7 @@ void SoundEffect::compile()
 
 
 	}
-	if (global_soundEffects[bank][index].add0) append(0x00);
+	if (soundEffects[bank][index].add0) append(0x00);
 	compileASM();
 
 

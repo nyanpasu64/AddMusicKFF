@@ -14,47 +14,47 @@
 
 #include "Directory.h"
 #include "globals.h"
-//ROM global_rom;
-std::vector<uint8_t> global_rom;
+//ROM rom;
+std::vector<uint8_t> rom;
 
-Music global_musics[256];
-std::vector<Sample> global_samples;
+Music musics[256];
+std::vector<Sample> samples;
 SoundEffect soundEffectsDF9[256];
 SoundEffect soundEffectsDFC[256];
-SoundEffect *global_soundEffects[2] = {soundEffectsDF9, soundEffectsDFC};
-std::vector<BankDefine *> global_bankDefines;
-std::map<File, int> global_sampleToIndex;
+SoundEffect *soundEffects[2] = {soundEffectsDF9, soundEffectsDFC};
+std::vector<BankDefine *> bankDefines;
+std::map<File, int> sampleToIndex;
 
-bool global_convert = true;
-bool global_checkEcho = true;
-bool global_forceSPCGeneration = false;
-int global_bankStart = 0x200000;
-bool global_verbose = false;
-bool global_aggressive = false;
-bool global_dupCheck = true;
-bool global_validateHex = true;
-bool global_doNotPatch = false;
-int global_errorCount = 0;
-bool global_optimizeSampleUsage = true;
-bool global_usingSA1 = false;
-bool global_allowSA1 = true;
-bool global_forceNoContinuePrompt = false;
-bool global_sfxDump = false;
-bool global_visualizeSongs = false;
-bool global_redirectStandardStreams = false;
-bool global_noSFX = false;
+bool convert = true;
+bool checkEcho = true;
+bool forceSPCGeneration = false;
+int bankStart = 0x200000;
+bool verbose = false;
+bool aggressive = false;
+bool dupCheck = true;
+bool validateHex = true;
+bool doNotPatch = false;
+int errorCount = 0;
+bool optimizeSampleUsage = true;
+bool usingSA1 = false;
+bool allowSA1 = true;
+bool forceNoContinuePrompt = false;
+bool sfxDump = false;
+bool visualizeSongs = false;
+bool redirectStandardStreams = false;
+bool noSFX = false;
 
-int global_programPos;
-int global_programUploadPos;
-int global_mainLoopPos;
-int global_reuploadPos;
-int global_SRCNTableCodePos;
-int global_programSize;
-int global_highestGlobalSong;
-int global_totalSampleCount;
-int global_songCount = 0;
-int global_songSampleListSize;
-bool global_useAsarDLL;
+int programPos;
+int programUploadPos;
+int mainLoopPos;
+int reuploadPos;
+int SRCNTableCodePos;
+int programSize;
+int highestGlobalSong;
+int totalSampleCount;
+int songCount = 0;
+int songSampleListSize;
+bool useAsarDLL;
 
 void openFile(const File &fileName, std::vector<uint8_t> &v)
 {
@@ -113,7 +113,7 @@ void printError(const std::string &error, bool isFatal, const std::string &fileN
 	{
 		oss << std::dec << "File: " << fileName << " Line: " << line << ":\n";
 	}
-	global_errorCount++;
+	errorCount++;
 	fputs((oss.str() + error).c_str(), stderr);
 	fputc('\n', stderr);
 	//puts((oss.str() + error).c_str());
@@ -134,7 +134,7 @@ void printWarning(const std::string &error, const std::string &fileName, int lin
 
 void quit(int code)
 {
-	if (global_forceNoContinuePrompt == false)
+	if (forceNoContinuePrompt == false)
 	{
 		puts("Press ENTER to continue...\n");
 		getc(stdin);
@@ -246,8 +246,8 @@ void insertValue(int value, int length, const std::string &find, std::string &st
 //int getSampleIndex(const std::string &name)
 //{
 //	for (int i = 0; i < 256; i++)
-//		if (global_samples[i].exists)
-//			if (name == global_samples[i].name)
+//		if (samples[i].exists)
+//			if (name == samples[i].name)
 //				return i;
 //
 //	return -1;
@@ -329,7 +329,7 @@ int findFreeSpace(unsigned int size, int start, std::vector<uint8_t> &ROM)
 			runningSpace = 0;
 
 		}
-		else if (ROM[i] == 0 || global_aggressive)
+		else if (ROM[i] == 0 || aggressive)
 		{
 			runningSpace += 1;
 		}
@@ -347,7 +347,7 @@ int findFreeSpace(unsigned int size, int start, std::vector<uint8_t> &ROM)
 		if (start == 0x080000)
 			return -1;
 		else
-			return findFreeSpace(size, 0x080000, global_rom);
+			return findFreeSpace(size, 0x080000, rom);
 	}
 
 	pos -= size;
@@ -373,7 +373,7 @@ int SNESToPC(int addr)					// Thanks to alcaro.
 		(addr & 0xFE0000) == 0x7E0000 ||	// wram
 		(addr & 0x408000) == 0x000000)		// hardware regs
 		return -1;
-	if (global_usingSA1 && addr >= 0x808000)
+	if (usingSA1 && addr >= 0x808000)
 		addr -= 0x400000;
 	addr = ((addr & 0x7F0000) >> 1 | (addr & 0x7FFF));
 	return addr;
@@ -386,26 +386,26 @@ int PCToSNES(int addr)
 
 	addr = ((addr << 1) & 0x7F0000) | (addr & 0x7FFF) | 0x8000;
 
-	if (!global_usingSA1 && (addr & 0xF00000) == 0x700000)
+	if (!usingSA1 && (addr & 0xF00000) == 0x700000)
 		addr |= 0x800000;
 
-	if (global_usingSA1 && addr >= 0x400000)
+	if (usingSA1 && addr >= 0x400000)
 		addr += 0x400000;
 	return addr;
 }
 
 bool findRATS(int offset)
 {
-	if (global_rom[offset] != 0x53) {
+	if (rom[offset] != 0x53) {
 		return false;
 	}
-	if (global_rom[offset+1] != 0x54) {
+	if (rom[offset+1] != 0x54) {
 		return false;
 	}
-	if (global_rom[offset+2] != 0x41) {
+	if (rom[offset+2] != 0x41) {
 		return false;
 	}
-	if (global_rom[offset+3] != 0x52) {
+	if (rom[offset+3] != 0x52) {
 		return false;
 	}
 	return true;
@@ -413,10 +413,10 @@ bool findRATS(int offset)
 
 int clearRATS(int offset)
 {
-	int size = ((global_rom[offset + 5] << 8) | global_rom[offset+4]) + 8;
+	int size = ((rom[offset + 5] << 8) | rom[offset+4]) + 8;
 	int r = size;
 	while (size >= 0)
-		global_rom[offset + size--] = 0;
+		rom[offset + size--] = 0;
 	return r+1;
 }
 
@@ -482,11 +482,11 @@ void addSample(const std::vector<uint8_t> &sample, const std::string &name, Musi
 	newSample.exists = true;
 	newSample.name = name;
 
-	if (global_dupCheck)
+	if (dupCheck)
 	{
-		for (int i = 0; i < global_samples.size(); i++)
+		for (int i = 0; i < samples.size(); i++)
 		{
-			if (global_samples[i].name == newSample.name)
+			if (samples[i].name == newSample.name)
 			{
 				if (maybeMusic)
 					maybeMusic->mySamples.push_back(i);
@@ -494,13 +494,13 @@ void addSample(const std::vector<uint8_t> &sample, const std::string &name, Musi
 			}
 		}
 
-		for (int i = 0; i < global_samples.size(); i++)
+		for (int i = 0; i < samples.size(); i++)
 		{
-			if (global_samples[i].data == newSample.data)
+			if (samples[i].data == newSample.data)
 			{
-				//Don't add global_samples from BNK files to the global_sampleToIndex map, because they're not valid filenames.
+				//Don't add samples from BNK files to the sampleToIndex map, because they're not valid filenames.
 				if (!(newSample.isBNK)) {
-					global_sampleToIndex[name] = i;
+					sampleToIndex[name] = i;
 				}
 				if (maybeMusic)
 					maybeMusic->mySamples.push_back(i);
@@ -511,46 +511,46 @@ void addSample(const std::vector<uint8_t> &sample, const std::string &name, Musi
 		if (!(newSample.isBNK)) {
 			fs::path p1 = "./"+newSample.name;
 			//If the sample in question was taken from a sample group, then use the sample group's important flag instead.
-			for (int i = 0; i < global_bankDefines.size(); i++)
+			for (int i = 0; i < bankDefines.size(); i++)
 			{
-				for (int j = 0; j < global_bankDefines[i]->global_samples.size(); j++)
+				for (int j = 0; j < bankDefines[i]->samples.size(); j++)
 				{
-					fs::path p2 = "./samples/"+*(global_bankDefines[i]->global_samples[j]);
+					fs::path p2 = "./samples/"+*(bankDefines[i]->samples[j]);
 					if (fs::equivalent(p1, p2))
 					{
 						//Copy the important flag from the sample group definition.
-						newSample.important = global_bankDefines[i]->importants[j];
+						newSample.important = bankDefines[i]->importants[j];
 						break;
 					}
 				}
 			}
 		}
 	}
-	//Don't add global_samples from BNK files to the global_sampleToIndex map, because they're not valid filenames.
+	//Don't add samples from BNK files to the sampleToIndex map, because they're not valid filenames.
 	if (!(newSample.isBNK)) {
-		global_sampleToIndex[newSample.name] = global_samples.size();
+		sampleToIndex[newSample.name] = samples.size();
 	}
 	if (maybeMusic)
-		maybeMusic->mySamples.push_back(global_samples.size());
-	global_samples.push_back(newSample);					// This is a sample we haven't encountered before.  Add it.
+		maybeMusic->mySamples.push_back(samples.size());
+	samples.push_back(newSample);					// This is a sample we haven't encountered before.  Add it.
 }
 
 void addSampleGroup(const File &groupName, Music *music)
 {
-	for (int i = 0; i < global_bankDefines.size(); i++)
+	for (int i = 0; i < bankDefines.size(); i++)
 	{
-		if ((std::string)groupName == global_bankDefines[i]->name)
+		if ((std::string)groupName == bankDefines[i]->name)
 		{
 			fprintf(stderr,
 				"adding sample group %s with %lu elements\n",
-				groupName.cStr(), global_bankDefines[i]->global_samples.size()
+				groupName.cStr(), bankDefines[i]->samples.size()
 			);
-			for (int j = 0; j < global_bankDefines[i]->global_samples.size(); j++)
+			for (int j = 0; j < bankDefines[i]->samples.size(); j++)
 			{
 				std::string temp;
 				//temp += "samples/";
-				temp += *(global_bankDefines[i]->global_samples[j]);
-				addSample((File)temp, music, global_bankDefines[i]->importants[j]);
+				temp += *(bankDefines[i]->samples[j]);
+				addSample((File)temp, music, bankDefines[i]->importants[j]);
 			}
 			return;
 		}
@@ -650,11 +650,11 @@ int getGlobalSample(const File &name, Music *music)
 
 
 	File ftemp = actualPath;
-	std::map<File, int>::const_iterator it = global_sampleToIndex.begin();
+	std::map<File, int>::const_iterator it = sampleToIndex.begin();
 
 	fs::path p1 = actualPath;
 
-	while (it != global_sampleToIndex.end())
+	while (it != sampleToIndex.end())
 	{
 		fs::path p2 = (std::string)it->first;
 		if (fs::equivalent(p1, p2))
@@ -1030,7 +1030,7 @@ bool asarCompileToBIN(const File &patchName, const File &binOutputFile, bool die
 	removeFile("temp.log");
 	removeFile("temp.txt");
 
-	if (global_useAsarDLL)
+	if (useAsarDLL)
 	{
 		int binlen = 0;
 		int buflen = 0x10000;		// 0x10000 instead of 0x8000 because a few things related to sound effects are stored at 0x8000 at times.
@@ -1090,7 +1090,7 @@ bool asarPatchToROM(const File &patchName, const File &romName, bool dieOnError)
 	removeFile("temp.log");
 	removeFile("temp.txt");
 
-	if (global_useAsarDLL)
+	if (useAsarDLL)
 	{
 		int binlen = 0;
 		int buflen;
