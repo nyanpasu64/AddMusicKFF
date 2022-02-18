@@ -1076,18 +1076,14 @@ void compileMusic()
 	{
 		if (musics[i].exists)
 		{
-			//if (!(i <= highestGlobalSong && !recompileMain))
-			//{
-			musics[i].index = i;
-			if (i > highestGlobalSong) {
-				musics[i].echoBufferSize = std::max(musics[i].echoBufferSize, maxGlobalEchoBufferSize);
-			}
-			musics[i].compile();
 			if (i <= highestGlobalSong) {
+				musics[i].compile();
 				maxGlobalEchoBufferSize = std::max(musics[i].echoBufferSize, maxGlobalEchoBufferSize);
+			} else {
+				musics[i].echoBufferSize = std::max(musics[i].echoBufferSize, maxGlobalEchoBufferSize);
+				musics[i].compile();
 			}
 			totalSamplecount += musics[i].mySamples.size();
-			//}
 		}
 	}
 
