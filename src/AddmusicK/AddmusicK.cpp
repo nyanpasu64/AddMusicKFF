@@ -481,6 +481,8 @@ void assembleSPCDriver()
 	reuploadPos = scanInt(temptxt, "ReuploadPos: ");
 	SRCNTableCodePos = scanInt(temptxt, "SRCNTableCodePos: ");
 	noSFX = (temptxt.find("NoSFX is enabled") != -1);
+
+	fprintf(stderr, "mainLoopPos = 0x%04X\n", mainLoopPos);
 	if (sfxDump && noSFX) {
 		printWarning("The sound driver build does not support sound effects due to the !noSFX flag\r\nbeing enabled in asm/UserDefines.asm, yet you requested to dump SFX. There will\r\nbe no new SPC dumps of the sound effects since the data is not included by\r\ndefault, nor is the playback code for the sound effects.");
 		sfxDump = false;
