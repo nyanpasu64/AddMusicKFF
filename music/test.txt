@@ -1,6 +1,6 @@
 #amk 2
 
-#0 v64 c4 c4 c4 c4
-#1 v64 c4 c4 c4 c4
-#2 v64 c4 c4 c4 c4
-#3 v64 c4 c4 c4 c4
+#0 v192 c4 c4 c4 c4
+#1 v192 c4 c4 c4 c4
+#2 v192 c4 c4 c4 c4
+#3 v192 c4 c4 c4 c4
