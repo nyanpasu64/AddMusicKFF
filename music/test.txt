@@ -1,4 +1,10 @@
 #amk 2
+#samples {
+    "default/00 SMW @0.brr"
+}
+#instruments {
+    "default/00 SMW @0.brr" $8F $E0 $00 $04 $00
+}
 
 #0 v192 c4 c4 c4 c4
 #1 v192 c4 c4 c4 c4
