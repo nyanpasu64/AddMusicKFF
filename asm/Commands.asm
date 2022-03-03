@@ -138,7 +138,7 @@ GetBackupInstrTable:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 cmdDB:					; Change the pan
 {
-	and   a, #$1f
+	and   a, #$3f
 	mov   !Pan+x, a         ; voice pan value
 	mov   a, y
 	and   a, #$c0
