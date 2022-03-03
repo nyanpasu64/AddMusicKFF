@@ -10,7 +10,6 @@ src/**/Release
 src/**/Debug
 !**/addmusick/
 **/addmusick
-**/asar
 tempmain.asm
 asm/SFX1DF9Table.bin
 asm/SFX1DFCTable.bin
