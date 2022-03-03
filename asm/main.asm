@@ -3119,13 +3119,13 @@ VelocityValues:
 	db $08, $12, $1B, $24, $2C, $35, $3E, $47, $51, $5A, $62, $6B, $7D, $8F, $A1, $B3	; Normal, SMW velocities.
 	db $19, $33, $4C, $66, $72, $7F, $8C, $99, $A5, $B2, $Bf, $CC, $D8, $E5, $F2, $FC	; Standard N-SPC velocities.
 
-; pan table (max pan full L = $20.00)
+; pan table (max pan full R = $20.00)
 PanValues:
-	db $00, $01, $02, $03, $05, $08, $0C, $10
-	db $15, $1B, $21, $28, $2F, $37, $3F, $48
-	db $51, $59, $60, $66, $6B, $6F, $72, $75
-	db $77, $79, $7A, $7B, $7C, $7D, $7E, $7E
-	db $7F
+	db $7F, $7E, $7E, $7D, $7C, $7B, $7A, $79
+	db $77, $75, $72, $6F, $6B, $66, $60, $59
+	db $51, $48, $3F, $37, $2F, $28, $21, $1B
+	db $15, $10, $0C, $08, $05, $03, $02, $01
+	db $00
 
 
 
