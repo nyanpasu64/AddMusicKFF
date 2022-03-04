@@ -6,9 +6,17 @@
     "default/00 SMW @0.brr" $8F $E0 $00 $03 $00
 }
 
-#0 l8
-v234
+#0 l4
+v255
 y0c  y1c  y2c  y3c  y4c  y5c  y6c  y7c  y8c  y9c
 y10c y11c y12c y13c y14c y15c y16c y17c y18c y19c
 y20c y21c y22c y23c y24c y25c y26c y27c y28c y29c
 y30c y31c y32c
+
+#1 v255 y4c [[r]]31
+#2 v255 y8c [[r]]31
+#3 v255 y12c [[r]]31
+#4 v255 y16c [[r]]31
+#5 v255 y24c [[r]]31
+#6 v255 y28c [[r]]31
+#7 v255 y32c [[r]]31
