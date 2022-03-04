@@ -615,7 +615,7 @@ void Music::parsePanCommand()
 	int pan = i;
 
 	if (i == -1) error("Error parsing pan (\"y\") command.")
-	if (i < 0 || i > 20) error("Illegal value for pan (\"y\") command.")
+	if (i < 0 || i > 32) error("Illegal value for pan (\"y\") command.")
 
 		skipSpaces;
 
