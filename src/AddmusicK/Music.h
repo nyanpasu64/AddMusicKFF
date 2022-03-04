@@ -62,7 +62,7 @@ public:
 
 	bool knowsLength;
 
-	int index;
+	int index = 6969;
 
 	/// vector[MySampleIndex] GlobalSampleIndex
 	std::vector<unsigned short> mySamples;
