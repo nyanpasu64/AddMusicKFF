@@ -1,0 +1,13 @@
+#amk 2
+#samples {
+    "default/00 SMW @0.brr"
+}
+#instruments {
+    "default/00 SMW @0.brr" $8F $E0 $00 $03 $00
+}
+
+#0 l8
+v234
+y0c  y1c  y2c  y3c  y4c  y5c  y6c  y7c  y8c  y9c
+y10c y11c y12c y13c y14c y15c y16c y17c y18c y19c
+y20c
