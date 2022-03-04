@@ -1076,6 +1076,7 @@ void compileMusic()
 	{
 		if (musics[i].exists)
 		{
+			musics[i].index = i;
 			if (i <= highestGlobalSong) {
 				musics[i].compile();
 				maxGlobalEchoBufferSize = std::max(musics[i].echoBufferSize, maxGlobalEchoBufferSize);
