@@ -252,8 +252,8 @@ L_0586:
 	
 	bra   MainLoop             ; restart main loop
 L_058D:
-	mov   a, $06             ; if writing 0 to APU2 then
-	beq   MainLoop             ;   restart main loop
+	mov   a, $06             ; load current song
+	beq   MainLoop             ;   if zero (no song), restart main loop
 	
 { ; Execute code for each channel.
 
